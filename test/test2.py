@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 def look():
     with open("class_data.json", "r") as f:
         data = json.load(f)
@@ -42,3 +43,6 @@ def find_qqs(class_id):
     qqs = class_data[class_id]
     return qqs
 
+true_time="17:06"
+print(true_time >= "09:55" )
+print(true_time <= "17:50")
