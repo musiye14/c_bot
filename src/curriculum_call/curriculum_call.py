@@ -70,7 +70,7 @@ def find_qqs(class_id):
     qqs = class_data[class_id]
     return qqs
 
-# 取消提醒
+# 取消提醒功能
 @called_del.handle()
 async def ca_del(event:Event):
     del_qq(event.get_user_id())
