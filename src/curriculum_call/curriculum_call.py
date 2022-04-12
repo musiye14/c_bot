@@ -24,6 +24,7 @@ sheet_name = '课表'
 table = pd.read_excel('src/curriculum_call/curriculum.xls', sheet_name=sheet_name)
 
 called = on_command("课程提醒", rule=to_me(), aliases={"课程", "课程通知", "课程提醒"}, priority=20)
+called_del = called = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒", "删除班级","关闭提醒"}, priority=20)
 # called.expire_time
 
 def look():
@@ -68,7 +69,12 @@ def find_qqs(class_id):
     class_data = look()
     qqs = class_data[class_id]
     return qqs
-
+# 取消提醒
+@called_del.handle()
+async def ca_del(event:Event):
+    del_qq(event.get_user_id)
+    called_del.send("关闭提醒功能")
+    return
 
 @called.handle()
 async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=Matcher):
@@ -77,7 +83,7 @@ async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=M
         matcher.set_arg("c", args)
 
 
-@called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦")
+@called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦 需要更改班级就重新输入指令")
 async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = ArgPlainText("c")):
     raw=event.get_message()
     print(raw)
@@ -135,15 +141,15 @@ for tt in time_transport:
         column_week_name = table.columns.values[0]
         column_course_name = table.columns.values[1]
         t = datetime.now()
-        true_time = f"{t.hour}:{t.minute}"
+        if (t.minute < 10):
+            true_time = f"{t.hour}:0{t.minute}"
+        else:
+            true_time = f"{t.hour}:{t.minute}"
         # print(hour,minute)
         # 测试 设定现在时间是 10:00
         print(true_time)
         # "8:05","10:00","13:10","15:05","18:10" 下面用来减少误差
-        if (time_transport.count(true_time) == 0):
-            print("当前时间不是提醒时间 等待下次执行")
-            return
-        elif (true_time >= "8:00" and true_time <= "8:20"):
+        if (true_time >= "8:00" and true_time <= "8:20"):
             true_time = time_transport[0]
         elif (true_time >= "9:55" and true_time <= "10:15"):
             true_time = time_transport[1]
