@@ -69,6 +69,7 @@ def find_qqs(class_id):
     class_data = look()
     qqs = class_data[class_id]
     return qqs
+
 # 取消提醒
 @called_del.handle()
 async def ca_del(event:Event):
