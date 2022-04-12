@@ -1,9 +1,8 @@
 import json
 import os
-filename = 'src/curriculum_call/class_data.json'
-
+filename = 'src/plugins/curriculum_call/class_data.json'
 def save(data):
-    with open("src/curriculum_call/class_data.json", "w") as f:
+    with open("src/plugins/curriculum_call/class_data.json", "w") as f:
         json.dump(data,f)
 
 if not os.path.exists(filename):

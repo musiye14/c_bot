@@ -21,14 +21,14 @@ time_transport = ["8:05", "10:00", "13:10", "15:05", "18:10"]
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 sheet_name = '课表'
 
-table = pd.read_excel('src/curriculum_call/curriculum.xls', sheet_name=sheet_name)
+table = pd.read_excel('src/plugins/curriculum_call/curriculum.xls', sheet_name=sheet_name)
 
 called = on_command("课程提醒", rule=to_me(), aliases={"课程", "课程通知", "课程提醒"}, priority=20)
 called_del = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒","取消提醒","删除班级","关闭提醒"}, priority=20)
 # called.expire_time
 
 def look():
-    with open("src/curriculum_call/class_data.json", "r") as f:
+    with open("src/plugins/curriculum_call/class_data.json", "r") as f:
         data = json.load(f)
         # print("加载完成：")
         # print(data)
@@ -36,7 +36,7 @@ def look():
 
 
 def save_qq(data):
-    with open("src/curriculum_call/class_data.json", "w") as f:
+    with open("src/plugins/curriculum_call/class_data.json", "w") as f:
         json.dump(data, f)
 
 
