@@ -24,7 +24,7 @@ sheet_name = '课表'
 table = pd.read_excel('src/curriculum_call/curriculum.xls', sheet_name=sheet_name)
 
 called = on_command("课程提醒", rule=to_me(), aliases={"课程", "课程通知", "课程提醒"}, priority=20)
-called_del = called = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒", "删除班级","关闭提醒"}, priority=20)
+called_del = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒", "删除班级","关闭提醒"}, priority=20)
 # called.expire_time
 
 def look():
@@ -118,6 +118,7 @@ async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = 
 
     # 命令的执行程序
     # 检测一下是否有定时任务在列表里  有的话删除后重新添加
+# time_transport = ["8:05", "10:00", "13:10", "15:05", "17:13"]
 for tt in time_transport:
     hour = tt.split(":")[0]
     minute = tt.split(":")[1]
@@ -133,6 +134,8 @@ for tt in time_transport:
     print(str(hour) + ":" + str(minute))
 
     # 根据qq号与提醒时间设定任务
+
+
     @scheduler.scheduled_job('cron', hour=hour, minute=minute, id=task_id)
     # @scheduler.scheduled_job('interval',minutes=1, id=task_id)
     async def call_class():
@@ -145,22 +148,27 @@ for tt in time_transport:
             true_time = f"{t.hour}:0{t.minute}"
         else:
             true_time = f"{t.hour}:{t.minute}"
+        if(t.hour<10):
+            true_time = f"0{t.hour}:{t.minute}"
+        else:
+            true_time = f"{t.hour}:{t.minute}"
         # print(hour,minute)
         # 测试 设定现在时间是 10:00
         print(true_time)
         # "8:05","10:00","13:10","15:05","18:10" 下面用来减少误差
-        if (true_time >= "8:00" and true_time <= "8:20"):
+        if (true_time >= "08:00" and true_time <= "08:20"):
             true_time = time_transport[0]
-        elif (true_time >= "9:55" and true_time <= "10:15"):
+        elif (true_time >= "09:55" and true_time <= "10:15"):
             true_time = time_transport[1]
         elif (true_time >= "13:05" and true_time <= "13:30"):
             true_time = time_transport[2]
+
         elif (true_time >= "15:00" and true_time <= "15:15"):
             true_time = time_transport[3]
         elif (true_time >= "18:20" and true_time <= "18:40"):
             true_time = time_transport[4]
-
-
+        print(true_time)
+        #第几节课
         transport_time = time_transport.index(true_time)
         # print(transport_time)
 
@@ -223,18 +231,16 @@ for tt in time_transport:
 
             # 用于 在同一时间的多课程中 找到课程后迅速结束任务
             flag = False
-            # 遍历所有在那天的可能课程
-            for time_index, i in enumerate(curriculums):
 
-                if (flag == True):
-                    break
+            # 遍历所有在那天的那个时段的可能课程
+            for i in curriculums:
+
                 # i=i.replace(" ","")
                 course = i
                 i = i.replace(" ", "")
                 cheak = i[-1:-4:-1]
                 cheak = cheak.isdigit() or cheak.isalpha()
 
-                # print(f"课程{time_index+1}为:  "+i)
                 # cheak的状态 表示 两种课程类型  false= 大学体育IIII 3-8，10，12-16    ture= 大学英语IV 1-10,12-15 杨曦 语音室A 或者  数字电子技术课程设计16周 白燕燕 实408
                 # 根据cheak 的状态选择不同的匹配方式
                 if (cheak == True):
@@ -261,16 +267,16 @@ for tt in time_transport:
                         if (len(c) > 1):
                             if (week >= int(c[0]) and week <= int(c[1])):
                                 for qq in qqs:
-                                    msg=course + "\n" + "上课时间：" + real_day_time[day_time[time_index]]
+                                    msg=course + "\n" + "上课时间：" + real_day_time[day_time[transport_time]]
                                     await bot.send_private_msg(user_id=qq, message=msg)
                                     # print(course)
-                                    # print(real_day_time[day_time[time_index]])
+                                    # print(real_day_time[day_time[transport_time]])
                                 return
                         else:
                             if (week == int(c[0])):
                                 for qq in qqs:
-                                    msg = course + "\n" + "上课时间：" + real_day_time[day_time[time_index]]
+                                    msg = course + "\n" + "上课时间：" + real_day_time[day_time[transport_time]]
                                     await bot.send_private_msg(user_id=qq, message=msg)
                                     # print(course)
-                                    # print(real_day_time[day_time[time_index]])
+                                    # print(real_day_time[day_time[transport_time]])
                                 return
