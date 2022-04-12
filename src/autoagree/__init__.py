@@ -1,38 +1,30 @@
-
-
-from nonebot import on_request, on_notice, on_command
-from nonebot.adapters.onebot.v11 import Event, FriendRequestEvent, GroupRequestEvent
-from nonebot.log import logger
+import nonebot
+from nonebot import on_command, on_request, on_notice, get_driver
+from nonebot.adapters.onebot.v11 import MessageSegment, Message, FriendRequestEvent, GroupRequestEvent, Bot
+from nonebot.rule import keyword, startswith, to_me
 from nonebot.typing import T_State
-from nonebot.adapters import Bot
-from nonebot.rule import to_me
+from typing import Union
+
+request_cmd = on_request(
+    priority=14,
+    block=True,
+)
 
 
-__usage__ = '''这不是你该看的功能'''
-
-__help_version__ = ''
-
-__help_plugin_name__ = "自动功能2"
-
-
-friend_req = on_request()
-
-
-@friend_req.handle()
-async def friend_req(bot: Bot, event: FriendRequestEvent, state: T_State):
-    logger.debug('friend req called')
-    logger.debug(event.json())
-    await bot.call_api('set_friend_add_request', flag=event.flag, approve=True)
-    # await bot.set_friend_add_request()
-
-
-group_req = on_request()
-
-
-@group_req.handle()
-async def group_req(bot: Bot, event: GroupRequestEvent, state: T_State):
-    logger.debug('group req called')
-    logger.debug(event.json())
-    logger.debug(event.flag)
-    await bot.call_api('set_group_add_request', flag=event.flag, approve=True)
-    # await bot.set_group_add_request(approve=True)
+@request_cmd.handle()
+async def handle_request(bot: Bot, event: Union[GroupRequestEvent, FriendRequestEvent], state: T_State):
+    if isinstance(event, GroupRequestEvent):
+        await bot.set_group_add_request(
+            flag=event.flag,
+            sub_type=event.sub_type,
+            approve=True,
+            reason=""
+        )
+        nonebot.logger.info("同意加入群聊: {}", event. group_id)
+    elif isinstance(event, FriendRequestEvent):
+        await bot.set_friend_add_request(
+            flag=event.flag,
+            approve=True,
+            remark=""
+        )
+        nonebot.logger.info("同意添加好友: {}", event.user_id)
