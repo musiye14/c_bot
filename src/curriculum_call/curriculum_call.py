@@ -135,15 +135,15 @@ for tt in time_transport:
         column_week_name = table.columns.values[0]
         column_course_name = table.columns.values[1]
         t = datetime.now()
-        true_time = f"{t.hour}:{t.minute}"
+        if (t.minute < 10):
+            true_time = f"{t.hour}:0{t.minute}"
+        else:
+            true_time = f"{t.hour}:{t.minute}"
         # print(hour,minute)
         # 测试 设定现在时间是 10:00
         print(true_time)
         # "8:05","10:00","13:10","15:05","18:10" 下面用来减少误差
-        if (time_transport.count(true_time) == 0):
-            print("当前时间不是提醒时间 等待下次执行")
-            return
-        elif (true_time >= "8:00" and true_time <= "8:20"):
+        if (true_time >= "8:00" and true_time <= "8:20"):
             true_time = time_transport[0]
         elif (true_time >= "9:55" and true_time <= "10:15"):
             true_time = time_transport[1]
