@@ -155,7 +155,6 @@ for tt in time_transport:
             true_time = time_transport[4]
 
 
-        true_time=time_transport[2]
         transport_time = time_transport.index(true_time)
         # print(transport_time)
 
