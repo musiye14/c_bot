@@ -73,7 +73,7 @@ def find_qqs(class_id):
 @called_del.handle()
 async def ca_del(event:Event):
     del_qq(event.get_user_id())
-    called_del.send("关闭提醒功能")
+    await called_del.send("关闭提醒功能")
     return
 
 @called.handle()
