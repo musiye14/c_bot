@@ -24,7 +24,7 @@ sheet_name = '课表'
 table = pd.read_excel('src/curriculum_call/curriculum.xls', sheet_name=sheet_name)
 
 called = on_command("课程提醒", rule=to_me(), aliases={"课程", "课程通知", "课程提醒"}, priority=20)
-called_del = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒", "删除班级","关闭提醒"}, priority=20)
+called_del = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒","取消提醒","删除班级","关闭提醒"}, priority=20)
 # called.expire_time
 
 def look():
@@ -72,7 +72,7 @@ def find_qqs(class_id):
 # 取消提醒
 @called_del.handle()
 async def ca_del(event:Event):
-    del_qq(event.get_user_id)
+    del_qq(event.get_user_id())
     called_del.send("关闭提醒功能")
     return
 
