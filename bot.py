@@ -28,10 +28,9 @@ nonebot.init(apscheduler_config={
 
 
 nonebot.load_builtin_plugins("echo")
-nonebot.load_plugins("src/test")
+nonebot.load_plugins("src/autoagree")
 nonebot.load_plugins("src/api_message")
 nonebot.load_plugins("src/curriculum_call")
-
 
 # Please DO NOT modify this file unless you know what you are doing!
 # As an alternative, you should use command `nb` or modify `pyproject.toml` to load plugins
