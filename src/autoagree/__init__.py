@@ -14,7 +14,7 @@ request_cmd = on_request(
 
 @request_cmd.handle()
 async def handle_request(bot: Bot, event: Union[GroupRequestEvent, FriendRequestEvent], state: T_State):
-    print(event.group_id)
+
     print("加群消息："+GroupRequestEvent.group_id)
     print("好友消息:"+FriendRequestEvent.get_user_id)
     print("是不是好友申请:"+isinstance(event,FriendRequestEvent))
