@@ -3,7 +3,6 @@
 
 import nonebot
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
-
 # Custom your logger
 # 
 # from nonebot.log import logger, default_format
