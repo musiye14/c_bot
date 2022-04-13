@@ -133,7 +133,7 @@ async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = 
 
     # 命令的执行程序
     # 检测一下是否有定时任务在列表里  有的话删除后重新添加
-# time_transport = ["8:05", "10:00", "13:10", "15:05", "17:13"]
+# time_transport = ["8:05", "10:00", "13:10", "15:05", "11:50"]
 for tt in time_transport:
     hour = tt.split(":")[0]
     minute = tt.split(":")[1]
@@ -163,12 +163,13 @@ for tt in time_transport:
             true_time = f"{t.hour}:0{t.minute}"
         else:
             true_time = f"{t.hour}:{t.minute}"
+
         if(t.hour<10):
             true_time = f"0{t.hour}:{t.minute}"
         else:
             true_time = f"{t.hour}:{t.minute}"
         # print(hour,minute)
-        # 测试 设定现在时间是 10:00
+
         print(true_time)
         # "8:05","10:00","13:10","15:05","18:10" 下面用来减少误差
         if (true_time >= "08:00" and true_time <= "08:20"):
