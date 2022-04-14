@@ -159,12 +159,11 @@ for tt in time_transport:
         column_week_name = table.columns.values[0]
         column_course_name = table.columns.values[1]
         t = datetime.now()
-        if (t.minute < 10):
+        if (t.minute < 10 and t.hour<10):
+            true_time = f"0{t.hour}:0{t.minute}"
+        elif(t.minute < 10):
             true_time = f"{t.hour}:0{t.minute}"
-        else:
-            true_time = f"{t.hour}:{t.minute}"
-
-        if(t.hour<10):
+        elif(t.hour <10):
             true_time = f"0{t.hour}:{t.minute}"
         else:
             true_time = f"{t.hour}:{t.minute}"
