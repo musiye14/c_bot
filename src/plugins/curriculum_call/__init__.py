@@ -330,23 +330,9 @@ async  def wacth(bot:Bot,event:Event):
         # 今天是周末
         await curr_today.send("今天是周末")
         return
-    sheet_name = '课表'
-    time_transport = ["8:05", "10:00", "13:10", "15:05", "18:10"]
-    table = pd.read_excel('D:\p_projects\\robot\c_bot\src\plugins\curriculum_call\curriculum.xls',
-                          sheet_name=sheet_name)
     t = datetime.now()
     column_course_name = table.columns.values[1]
     class_id = find_class("1950655144")
-    day_time = ["1-2", "3-4", "5-6", "7-8", "9-11"]
-    real_day_time = {"1-2": "教一  8:20-9:55 教二 8:30-10:05",
-                     "3-4": "教一  10:15-11:50 教二 10:35-12:10",
-                     "5-6": "教一教二  13:30-15:05 ",
-                     "7-8": "教一教二  15:15-16:50 ",
-                     "9-11": "教一教二  18:30-20:55 "
-                     }
-    # 每分钟检测一次直到检测到   提醒时间 就提醒
-    time_transport = ["8:05", "10:00", "13:10", "15:05", "18:10"]
-
     # 班级名列表
     column_name = table.columns.values
     if (not class_id):
