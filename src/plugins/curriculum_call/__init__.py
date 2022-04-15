@@ -326,9 +326,9 @@ async  def wacth(bot:Bot,event:Event):
     week = int(count / 7 + 1)
     # 判今天是星期几 0-4表示周一 到周五
     day = str(datetime.now().weekday()+content)
-    if(day>4):
+    if(day>'4'):
         # 今天是周末
-        curr_today.send("今天是周末")
+        await curr_today.send("今天是周末")
         return
     sheet_name = '课表'
     time_transport = ["8:05", "10:00", "13:10", "15:05", "18:10"]
@@ -357,7 +357,7 @@ async  def wacth(bot:Bot,event:Event):
         class_name = column_name[index]
         t = i.find(class_id)
         if (t != -1):
-            break;
+            break
     if (class_name == ""):
         print("没有找到对应班级")
     else:
