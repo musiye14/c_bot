@@ -41,6 +41,7 @@ table = pd.read_excel('src/plugins/curriculum_call/curriculum.xls', sheet_name=s
 
 called = on_command("课程提醒", rule=to_me(), aliases={"课程", "课程通知", "课程提醒"}, priority=20)
 called_del = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒","取消提醒","删除班级","关闭提醒"}, priority=20)
+#
 curr_today = on_keyword(["今天课程","今天上什么","明天上什么","明天课程","今日课程","明日课程"],rule=to_me(),priority=20)
 
 # called.expire_time
