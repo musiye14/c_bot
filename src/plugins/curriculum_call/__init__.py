@@ -317,6 +317,7 @@ for tt in time_transport:
 @curr_today.handle()
 async  def wacth(bot:Bot,event:Event):
     content=event.get_message()
+    print(content)
     # 如果有明天或者明日就天数加一
     content=content.count("明天")+content.count("明日")
     old = datetime(2022, 2, 28)
@@ -326,6 +327,8 @@ async  def wacth(bot:Bot,event:Event):
     week = int(count / 7 + 1)
     # 判今天是星期几 0-4表示周一 到周五
     day = str(datetime.now().weekday()+content)
+    print(content)
+    print(day)
     if(day>"4"):
         # 今天是周末
         await curr_today.send("今天是周末")
