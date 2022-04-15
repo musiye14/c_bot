@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import time
@@ -113,6 +114,7 @@ async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=M
 # 检查班级信息是否合格
 @called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦 需要更改班级就重新输入指令")
 async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = ArgPlainText("c")):
+    await asyncio.sleep()
     raw=event.get_message()
     print(raw)
     print([raw])
@@ -310,6 +312,8 @@ for tt in time_transport:
                                     await bot.send_private_msg(user_id=qq, message=msg)
                                     # print(course)
                                     # print(real_day_time[day_time[transport_time]])
+        #给任务加上延迟不能发的太快
+        await asyncio.sleep(1)
         return
 
 
