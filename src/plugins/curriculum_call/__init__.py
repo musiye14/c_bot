@@ -316,6 +316,11 @@ for tt in time_transport:
 
 @curr_today.handle()
 async  def wacth(bot:Bot,event:Event):
+    class_id = find_class(event.get_user_id())
+    if (not class_id):
+        print("找不到你的班级")
+        await curr_today.send("我没找到你的班级 请先开启提醒功能吧  输入 /课程")
+        return
     content=str(event.get_message())
     # 如果有明天或者明日就天数加一
     content=content.count("明天")+content.count("明日")
@@ -332,13 +337,10 @@ async  def wacth(bot:Bot,event:Event):
         return
     t = datetime.now()
     column_course_name = table.columns.values[1]
-    class_id = find_class("1950655144")
+
     # 班级名列表
     column_name = table.columns.values
-    if (not class_id):
-        print("找不到你的班级")
-        await curr_today.send("我没找到你的班级 请先开启提醒功能吧  输入 /课程")
-        # return
+
     for index, i in enumerate(column_name):
         i = str(i)
         class_name = column_name[index]
