@@ -312,8 +312,8 @@ for tt in time_transport:
                                     await bot.send_private_msg(user_id=qq, message=msg)
                                     # print(course)
                                     # print(real_day_time[day_time[transport_time]])
-        #给任务加上延迟不能发的太快
-        await asyncio.sleep(1)
+            # 给任务加上延迟不能发的太快
+            await asyncio.sleep(1)
         return
 
 
@@ -412,6 +412,4 @@ async  def wacth(bot:Bot,event:Event):
                         msg = day_time[transport_time] + "节:  " + course
 
     await curr_today.send(msg)
-    # 给任务加上延迟不能发的太快
-    await asyncio.sleep(1)
     return
