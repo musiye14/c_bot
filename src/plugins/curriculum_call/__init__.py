@@ -412,4 +412,6 @@ async  def wacth(bot:Bot,event:Event):
                         msg = day_time[transport_time] + "节:  " + course
 
     await curr_today.send(msg)
+    # 给任务加上延迟不能发的太快
+    await asyncio.sleep(1)
     return
