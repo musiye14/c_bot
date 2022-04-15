@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 import pandas as pd
 import json
 import re
@@ -39,6 +41,8 @@ table = pd.read_excel('src/plugins/curriculum_call/curriculum.xls', sheet_name=s
 
 called = on_command("课程提醒", rule=to_me(), aliases={"课程", "课程通知", "课程提醒"}, priority=20)
 called_del = on_command("删除课程提醒", rule=to_me(), aliases={"取消课程提醒","取消提醒","删除班级","关闭提醒"}, priority=20)
+curr_today = on_keyword("今天课程",rule=to_me(),aliases={"今天上什么","明天上什么","明天课程","今日课程","明日课程"},priority=20)
+
 # called.expire_time
 
 def look():
@@ -84,6 +88,13 @@ def find_qqs(class_id):
     qqs = class_data[class_id]
     return qqs
 
+def find_class(qq_id):
+    class_data = look()
+    #顺序遍历  可以考虑之后用二分之类的
+    for i in class_data:
+        if (class_data[i].count(qq_id)!= 0):
+            return i
+
 # 取消提醒功能
 @called_del.handle()
 async def ca_del(event:Event):
@@ -91,13 +102,14 @@ async def ca_del(event:Event):
     await called_del.send("关闭提醒功能")
     return
 
+# 保存班级信息
 @called.handle()
 async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=Matcher):
     plain_text = args.extract_plain_text()
     if plain_text and plain_text[0] == 'B' and plain_text[1:-1].isdigit():
         matcher.set_arg("c", args)
 
-
+# 检查班级信息是否合格
 @called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦 需要更改班级就重新输入指令")
 async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = ArgPlainText("c")):
     raw=event.get_message()
@@ -154,7 +166,7 @@ for tt in time_transport:
     @scheduler.scheduled_job('cron', hour=hour, minute=minute, id=task_id)
     # @scheduler.scheduled_job('interval',minutes=1, id=task_id)
     async def call_class():
-        data=look()
+
         column_name = table.columns.values
         column_week_name = table.columns.values[0]
         column_course_name = table.columns.values[1]
@@ -198,17 +210,22 @@ for tt in time_transport:
         # 判今天是星期几 0-4表示周一 到周五
         day = str(datetime.now().weekday())
 
+        data = look()
         # 拿取对应班级
         for c_i in data:
             if(c_i==""):
                 continue
             class_id=c_i
+            #找到一个班里的qq号
             qqs=find_qqs(class_id)
             if(not qqs):
                 continue
+
             for index, i in enumerate(column_name):
                 i = str(i)
+                # 取每一个列名
                 class_name = column_name[index]
+                # 查找这个列名是否包含这个班级名
                 t = i.find(class_id)
                 if (t != -1):
                     break;
@@ -228,6 +245,7 @@ for tt in time_transport:
                 # print(new_table.loc[i:i+4].values)
                 line = new_table.loc[i:i + 4].values
                 name = {}
+                # j表示每天的每个时段的课
                 for j in line:
                     name[j[0]] = j[1]
                 weeks[str(index)] = name
@@ -244,8 +262,6 @@ for tt in time_transport:
                 return
             curriculums = curriculums.split('\n')
 
-            # 用于 在同一时间的多课程中 找到课程后迅速结束任务
-            flag = False
 
             # 遍历所有在那天的那个时段的可能课程
             for i in curriculums:
@@ -294,3 +310,112 @@ for tt in time_transport:
                                     # print(course)
                                     # print(real_day_time[day_time[transport_time]])
         return
+
+
+
+@curr_today.handle()
+async  def wacth(bot:Bot,event:Event):
+    content=event.get_message()
+    # 如果有明天或者明日就天数加一
+    content=content.count("明天")+content.count("明日")
+    old = datetime(2022, 2, 28)
+    now = datetime.now()
+    count = (now - old).days
+    # 获取今天是第几周
+    week = int(count / 7 + 1)
+    # 判今天是星期几 0-4表示周一 到周五
+    day = str(datetime.now().weekday()+content)
+    if(day>4):
+        # 今天是周末
+        curr_today.send("今天是周末")
+        return
+    sheet_name = '课表'
+    time_transport = ["8:05", "10:00", "13:10", "15:05", "18:10"]
+    table = pd.read_excel('D:\p_projects\\robot\c_bot\src\plugins\curriculum_call\curriculum.xls',
+                          sheet_name=sheet_name)
+    t = datetime.now()
+    column_course_name = table.columns.values[1]
+    class_id = find_class("1950655144")
+    day_time = ["1-2", "3-4", "5-6", "7-8", "9-11"]
+    real_day_time = {"1-2": "教一  8:20-9:55 教二 8:30-10:05",
+                     "3-4": "教一  10:15-11:50 教二 10:35-12:10",
+                     "5-6": "教一教二  13:30-15:05 ",
+                     "7-8": "教一教二  15:15-16:50 ",
+                     "9-11": "教一教二  18:30-20:55 "
+                     }
+    # 每分钟检测一次直到检测到   提醒时间 就提醒
+    time_transport = ["8:05", "10:00", "13:10", "15:05", "18:10"]
+
+    # 班级名列表
+    column_name = table.columns.values
+    if (not class_id):
+        print("找不到你的班级")
+        # return
+    for index, i in enumerate(column_name):
+        i = str(i)
+        class_name = column_name[index]
+        t = i.find(class_id)
+        if (t != -1):
+            break;
+    if (class_name == ""):
+        print("没有找到对应班级")
+    else:
+        new_table = table[[column_course_name, class_name]]
+    weeks = {}
+    for index, i in enumerate(range(1, 26, 5)):
+        # print(new_table.loc[i:i+4].values)
+        line = new_table.loc[i:i + 4].values
+        name = {}
+        for j in line:
+            name[j[0]] = j[1]
+        weeks[str(index)] = name
+
+
+    curriculums = weeks[day]
+
+    # h 和ww 只是用来转换一下  最后i会取到一天的每一节课
+    for index, h in enumerate(curriculums):
+        ww = curriculums[h]
+
+        if (pd.isna(ww)):
+            break
+        transport_time = index
+        for i in ww.split('\n'):
+            # i=i.replace(" ","")
+            course = i
+            i = i.replace(" ", "")
+            cheak = i[-1:-4:-1]
+            cheak = cheak.isdigit() or cheak.isalpha()
+
+            # cheak的状态 表示 两种课程类型  false= 大学体育IIII 3-8，10，12-16    ture= 大学英语IV 1-10,12-15 杨曦 语音室A 或者  数字电子技术课程设计16周 白燕燕 实408
+            # 根据cheak 的状态选择不同的匹配方式
+            if (cheak == True):
+                pat = re.compile(r'(?<=\D)\d\d?-\d\d?(?=\D)|\d\d?(?=周)')
+                dt = pat.findall(i)
+                # print(dt)
+            else:
+                pat = re.compile(r'(?=[\w]*)\d\d?-\d\d?(?=[\w]*)|(?=\w*)\d\d?(?=\w*)')
+                dt = pat.findall(i)
+            # print(dt)
+            for t in dt:
+                # print(t)
+                class_choose = t.split("，")
+                if (len(class_choose) == 1):
+                    class_choose = class_choose[0].split(",")
+                """可能的形式有   1-10，13-15，17  ----->    [1-10  ,13-15  ,17 ]------>  [1,10] """
+            for j in class_choose:
+                # print(j)
+                c = j.split("-")
+                # bot = get_bot()
+                # print(j)
+                if (len(c) > 1):
+                    if (week >= int(c[0]) and week <= int(c[1])):
+                        msg = day_time[transport_time] + "节:  " + course
+                        await curr_today.send(msg)
+                        # print(day_time[transport_time] + "节:  " + course)
+                else:
+                    if (week == int(c[0])):
+                        msg = day_time[transport_time] + "节:  " + course
+                        await curr_today.send(msg)
+
+    return
