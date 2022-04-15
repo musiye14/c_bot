@@ -7,8 +7,7 @@ import json
 import re
 from datetime import datetime
 from nonebot import require, on_keyword, on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, Event,MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Message,Event,MessageSegment
 from nonebot.rule import to_me
 from nonebot.params import Arg, CommandArg, ArgPlainText
 from nonebot.matcher import Matcher
