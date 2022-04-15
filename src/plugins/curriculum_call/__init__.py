@@ -316,7 +316,7 @@ for tt in time_transport:
 
 @curr_today.handle()
 async  def wacth(bot:Bot,event:Event):
-    content=event.get_message().get(str)
+    content=str(event.get_message())
     # 如果有明天或者明日就天数加一
     content=content.count("明天")+content.count("明日")
     old = datetime(2022, 2, 28)
