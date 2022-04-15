@@ -7,7 +7,8 @@ import json
 import re
 from datetime import datetime
 from nonebot import require, on_keyword, on_command
-from nonebot.adapters.onebot.v11 import Bot, Event, Message,MessageSegment
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, Event,MessageSegment
 from nonebot.rule import to_me
 from nonebot.params import Arg, CommandArg, ArgPlainText
 from nonebot.matcher import Matcher
@@ -315,8 +316,8 @@ for tt in time_transport:
 
 
 @curr_today.handle()
-async  def wacth(bot:Bot,event:Event,msg:Message):
-    content=msg.get()
+async  def wacth(bot:Bot,event:Event):
+    content=event.get_message().get()
     # 如果有明天或者明日就天数加一
     content=content.count("明天")+content.count("明日")
     old = datetime(2022, 2, 28)
