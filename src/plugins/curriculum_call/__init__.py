@@ -326,7 +326,7 @@ async  def wacth(bot:Bot,event:Event):
     week = int(count / 7 + 1)
     # 判今天是星期几 0-4表示周一 到周五
     day = str(datetime.now().weekday()+content)
-    if(day>'4'):
+    if(day>"4"):
         # 今天是周末
         await curr_today.send("今天是周末")
         return
@@ -359,7 +359,7 @@ async  def wacth(bot:Bot,event:Event):
 
 
     curriculums = weeks[day]
-
+    msg =""
     # h 和ww 只是用来转换一下  最后i会取到一天的每一节课
     for index, h in enumerate(curriculums):
         ww = curriculums[h]
@@ -397,12 +397,12 @@ async  def wacth(bot:Bot,event:Event):
                 # print(j)
                 if (len(c) > 1):
                     if (week >= int(c[0]) and week <= int(c[1])):
-                        msg = day_time[transport_time] + "节:  " + course
-                        await curr_today.send(msg)
+                        msg = msg+day_time[transport_time] + "节:  " + course+"\n"
+
                         # print(day_time[transport_time] + "节:  " + course)
                 else:
                     if (week == int(c[0])):
                         msg = day_time[transport_time] + "节:  " + course
-                        await curr_today.send(msg)
 
+    await curr_today.send(msg)
     return
