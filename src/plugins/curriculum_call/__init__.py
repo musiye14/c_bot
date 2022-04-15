@@ -328,7 +328,7 @@ async  def wacth(bot:Bot,event:Event):
     day = str(datetime.now().weekday()+content)
     if(day>"4"):
         # 今天是周末
-        await curr_today.send("今天是周末")
+        await curr_today.send("是周末")
         return
     t = datetime.now()
     column_course_name = table.columns.values[1]
