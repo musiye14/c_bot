@@ -333,8 +333,10 @@ async  def wacth(bot:Bot,event:Event):
     count = (now - old).days
     # 获取今天是第几周
     week = int(count / 7 + 1)
-    # 判今天是星期几 0-4表示周一 到周五
+    # 判今天是星期几 0-4表示周一 到周五 5 6是周六 周天
     day = str(datetime.now().weekday()+content)
+    if(day>"6"):
+        day="0"
     if(day>"4"):
         # 今天是周末
         await curr_today.send("是周末")
