@@ -337,7 +337,8 @@ async  def wacth(bot:Bot,event:Event):
     day = str(datetime.now().weekday()+content)
     if(day>"6"):
         day="0"
-    if(day>"4"):
+        week=week+1
+    elif(day>"4"):
         # 今天是周末
         await curr_today.send("是周末")
         return
