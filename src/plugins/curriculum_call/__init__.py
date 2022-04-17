@@ -397,8 +397,8 @@ async  def wacth(bot:Bot,event:Event):
             for t in dt:
                 # print(t)
                 class_choose = t.split("，")
-                if (len(class_choose) == 1):
-                    class_choose = class_choose[0].split(",")
+                if len(class_choose) == 1:
+                    class_choose = t.split(",")
                 """可能的形式有   1-10，13-15，17  ----->    [1-10  ,13-15  ,17 ]------>  [1,10] """
             for j in class_choose:
                 # print(j)
