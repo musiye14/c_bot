@@ -328,7 +328,6 @@ async  def wacth(bot:Bot,event:Event):
         return
     content=str(event.get_message())
     # 如果有明天或者明日就天数加一
-    print(content.count("明天"))
     content=content.count("明天")+content.count("明日")
 
     old = datetime(2022, 2, 28)
@@ -338,7 +337,6 @@ async  def wacth(bot:Bot,event:Event):
     week = int(count / 7 + 1)
     # 判今天是星期几 0-4表示周一 到周五 5 6是周六 周天
     day = str(datetime.now().weekday()+content)
-    print(day)
     if(day>"6"):
         day="0"
         week=week+1
@@ -372,17 +370,18 @@ async  def wacth(bot:Bot,event:Event):
 
 
     curriculums = weeks[day]
-    msg =""
+    msg = ""
     # h 和ww 只是用来转换一下  最后i会取到一天的每一节课
     for index, h in enumerate(curriculums):
         ww = curriculums[h]
-
+        # print(ww)
         if (pd.isna(ww)):
             break
         transport_time = index
         for i in ww.split('\n'):
             # i=i.replace(" ","")
             course = i
+
             i = i.replace(" ", "")
             cheak = i[-1:-4:-1]
             cheak = cheak.isdigit() or cheak.isalpha()
@@ -404,19 +403,24 @@ async  def wacth(bot:Bot,event:Event):
                 if len(class_choose) == 1:
                     class_choose = t.split(",")
                 """可能的形式有   1-10，13-15，17  ----->    [1-10  ,13-15  ,17 ]------>  [1,10] """
+
+            # print(class_choose)
             for j in class_choose:
                 # print(j)
                 c = j.split("-")
                 # bot = get_bot()
                 # print(j)
+                # print(c)
                 if (len(c) > 1):
                     if (week >= int(c[0]) and week <= int(c[1])):
-                        msg = msg+day_time[transport_time] + "节:  " + course+"\n"
-
-                        # print(day_time[transport_time] + "节:  " + course)
-                else:
+                        msg = msg + day_time[transport_time] + "节:  " + course + "\n"
+                        # print(day_time[transport_time]+"节:  "+course)
+                        # print(course)
+                        # await bot.send_private_msg(user_id=qq, message=msg)
+                        # print(real_day_time[day_time[transport_time]])
+                elif (len(c) == 1):
                     if (week == int(c[0])):
-                        msg = day_time[transport_time] + "节:  " + course
+                        msg = msg + day_time[transport_time] + "节:  " + course + "\n"
 
     await curr_today.send(msg)
     return
