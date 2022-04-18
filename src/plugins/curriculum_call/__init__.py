@@ -421,6 +421,5 @@ async  def wacth(bot:Bot,event:Event):
                 elif (len(c) == 1):
                     if (week == int(c[0])):
                         msg = msg + day_time[transport_time] + "节:  " + course + "\n"
-    print(msg)
-    await curr_today.send(msg)
+    await bot.send_private_msg(user_id=event.get_user_id, message=msg)
     return
