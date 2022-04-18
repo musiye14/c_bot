@@ -114,7 +114,7 @@ async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=M
 # 检查班级信息是否合格
 @called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦 需要更改班级就重新输入指令")
 async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = ArgPlainText("c")):
-    await asyncio.sleep()
+    # await asyncio.sleep(1)
     raw=event.get_message()
     print(raw)
     print([raw])
