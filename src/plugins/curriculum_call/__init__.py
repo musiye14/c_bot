@@ -424,5 +424,5 @@ async  def wacth(bot:Bot,event:Event):
     print(msg)
     print(type(msg))
     # await bot.send_private_msg(user_id=event.get_user_id(), message=msg)
-    await curr_today.send(msg)
+    await curr_today.send("1-2节:  单片机原理与应用实验 8-15周  郗华  实203 \n3-4节:  高级路由及交换技术 1-12 高卫卫 1-208")
     return
