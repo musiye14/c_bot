@@ -114,7 +114,7 @@ async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=M
 # 检查班级信息是否合格
 @called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦 需要更改班级就重新输入指令")
 async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = ArgPlainText("c")):
-    await asyncio.sleep(1)
+    # await asyncio.sleep(1)
     raw=event.get_message()
     print(raw)
     print([raw])
@@ -320,7 +320,7 @@ for tt in time_transport:
 
 @curr_today.handle()
 async  def wacth(bot:Bot,event:Event):
-    await asyncio.sleep(0.5)
+    # await asyncio.sleep(0.5)
     class_id = find_class(event.get_user_id())
     if (not class_id):
         print("找不到你的班级")
@@ -424,5 +424,5 @@ async  def wacth(bot:Bot,event:Event):
     print(msg)
     print(type(msg))
     # await bot.send_private_msg(user_id=event.get_user_id(), message=msg)
-    await curr_today.send("1-2节:  单片机原理与应用实验 8-15周  郗华  实203 \n3-4节:  高级路由及交换技术 1-12 高卫卫 1-208")
+    await curr_today.send(msg)
     return
