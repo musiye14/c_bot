@@ -394,6 +394,7 @@ async  def wacth(bot:Bot,event:Event):
                 pat = re.compile(r'(?=[\w]*)\d\d?-\d\d?(?=[\w]*)|(?=\w*)\d\d?(?=\w*)')
                 dt = pat.findall(i)
             # print(dt)
+            class_choose = []
             for t in dt:
                 # print(t)
                 class_choose = t.split("，")
