@@ -114,7 +114,7 @@ async def update(bot: Bot, event: Event, args: Message = CommandArg(), matcher=M
 # 检查班级信息是否合格
 @called.got("c", prompt="请输入班级信息 注意B要大写 超过2分钟就要重新输入哦 需要更改班级就重新输入指令")
 async def class_run(bot: Bot, event: Event, c: Message = Arg(), class_id: str = ArgPlainText("c")):
-    # await asyncio.sleep(1)
+    await asyncio.sleep(1)
     raw=event.get_message()
     print(raw)
     print([raw])
@@ -320,6 +320,7 @@ for tt in time_transport:
 
 @curr_today.handle()
 async  def wacth(bot:Bot,event:Event):
+    await asyncio.sleep(0.5)
     class_id = find_class(event.get_user_id())
     if (not class_id):
         print("找不到你的班级")
@@ -327,7 +328,9 @@ async  def wacth(bot:Bot,event:Event):
         return
     content=str(event.get_message())
     # 如果有明天或者明日就天数加一
+    print(content.count("明天"))
     content=content.count("明天")+content.count("明日")
+
     old = datetime(2022, 2, 28)
     now = datetime.now()
     count = (now - old).days
@@ -335,6 +338,7 @@ async  def wacth(bot:Bot,event:Event):
     week = int(count / 7 + 1)
     # 判今天是星期几 0-4表示周一 到周五 5 6是周六 周天
     day = str(datetime.now().weekday()+content)
+    print(day)
     if(day>"6"):
         day="0"
         week=week+1
@@ -342,7 +346,6 @@ async  def wacth(bot:Bot,event:Event):
         # 今天是周末
         await curr_today.send("是周末")
         return
-    t = datetime.now()
     column_course_name = table.columns.values[1]
 
     # 班级名列表
