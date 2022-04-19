@@ -345,16 +345,16 @@ async  def wacth(bot:Bot,event:Event):
         await curr_today.send("是周末")
         return
     column_course_name = table.columns.values[1]
-
-    # 班级名列表
     column_name = table.columns.values
-
+    if (not class_id):
+        print("找不到你的班级")
+        # return
     for index, i in enumerate(column_name):
         i = str(i)
         class_name = column_name[index]
         t = i.find(class_id)
         if (t != -1):
-            break
+            break;
     if (class_name == ""):
         print("没有找到对应班级")
     else:
@@ -368,10 +368,26 @@ async  def wacth(bot:Bot,event:Event):
             name[j[0]] = j[1]
         weeks[str(index)] = name
 
+    old = datetime(2022, 2, 28)
+    now = datetime.now()
+    count = (now - old).days
+    # 获取今天是第几周
+    week = int(count / 7 + 1)
+    # 判今天是星期几 0-4表示周一 到周五
 
+    content = "明天天123"
+    content = content.count("明天") + content.count("明日")
+    day = str(datetime.now().weekday() + content)
+    if (day > "6"):
+        day = "0"
+        week = week + 1
+    if (day > '4'):
+        # 今天是周末
+        print(123)
     curriculums = weeks[day]
-    msg = ""
+
     # h 和ww 只是用来转换一下  最后i会取到一天的每一节课
+    msg = ""
     for index, h in enumerate(curriculums):
         ww = curriculums[h]
         # print(ww)
@@ -421,8 +437,89 @@ async  def wacth(bot:Bot,event:Event):
                 elif (len(c) == 1):
                     if (week == int(c[0])):
                         msg = msg + day_time[transport_time] + "节:  " + course + "\n"
-    print(msg)
-    print(type(msg))
-    # await bot.send_private_msg(user_id=event.get_user_id(), message=msg)
+                        # await bot.send_private_msg(user_id=qq, message=msg)
+                        # print(course)
+                        # print(real_day_time[day_time[transport_time]])
     await curr_today.send(msg)
     return
+    #
+    # # 班级名列表
+    # column_name = table.columns.values
+    #
+    # for index, i in enumerate(column_name):
+    #     i = str(i)
+    #     class_name = column_name[index]
+    #     t = i.find(class_id)
+    #     if (t != -1):
+    #         break
+    # if (class_name == ""):
+    #     print("没有找到对应班级")
+    # else:
+    #     new_table = table[[column_course_name, class_name]]
+    # weeks = {}
+    # for index, i in enumerate(range(1, 26, 5)):
+    #     # print(new_table.loc[i:i+4].values)
+    #     line = new_table.loc[i:i + 4].values
+    #     name = {}
+    #     for j in line:
+    #         name[j[0]] = j[1]
+    #     weeks[str(index)] = name
+    #
+    #
+    # curriculums = weeks[day]
+    # msg = ""
+    # # h 和ww 只是用来转换一下  最后i会取到一天的每一节课
+    # for index, h in enumerate(curriculums):
+    #     ww = curriculums[h]
+    #     # print(ww)
+    #     if (pd.isna(ww)):
+    #         break
+    #     transport_time = index
+    #     for i in ww.split('\n'):
+    #         # i=i.replace(" ","")
+    #         course = i
+    #
+    #         i = i.replace(" ", "")
+    #         cheak = i[-1:-4:-1]
+    #         cheak = cheak.isdigit() or cheak.isalpha()
+    #
+    #         # cheak的状态 表示 两种课程类型  false= 大学体育IIII 3-8，10，12-16    ture= 大学英语IV 1-10,12-15 杨曦 语音室A 或者  数字电子技术课程设计16周 白燕燕 实408
+    #         # 根据cheak 的状态选择不同的匹配方式
+    #         if (cheak == True):
+    #             pat = re.compile(r'(?<=\D)\d\d?-\d\d?(?=\D)|\d\d?(?=周)')
+    #             dt = pat.findall(i)
+    #             # print(dt)
+    #         else:
+    #             pat = re.compile(r'(?=[\w]*)\d\d?-\d\d?(?=[\w]*)|(?=\w*)\d\d?(?=\w*)')
+    #             dt = pat.findall(i)
+    #         # print(dt)
+    #         class_choose = []
+    #         for t in dt:
+    #             # print(t)
+    #             class_choose = t.split("，")
+    #             if len(class_choose) == 1:
+    #                 class_choose = t.split(",")
+    #             """可能的形式有   1-10，13-15，17  ----->    [1-10  ,13-15  ,17 ]------>  [1,10] """
+    #
+    #         # print(class_choose)
+    #         for j in class_choose:
+    #             # print(j)
+    #             c = j.split("-")
+    #             # bot = get_bot()
+    #             # print(j)
+    #             # print(c)
+    #             if (len(c) > 1):
+    #                 if (week >= int(c[0]) and week <= int(c[1])):
+    #                     msg = msg + day_time[transport_time] + "节:  " + course + "\n"
+    #                     # print(day_time[transport_time]+"节:  "+course)
+    #                     # print(course)
+    #                     # await bot.send_private_msg(user_id=qq, message=msg)
+    #                     # print(real_day_time[day_time[transport_time]])
+    #             elif (len(c) == 1):
+    #                 if (week == int(c[0])):
+    #                     msg = msg + day_time[transport_time] + "节:  " + course + "\n"
+    # print(msg)
+    # print(type(msg))
+    # # await bot.send_private_msg(user_id=event.get_user_id(), message=msg)
+    # await curr_today.send(msg)
+    # return
