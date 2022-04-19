@@ -440,6 +440,8 @@ async  def wacth(bot:Bot,event:Event):
                         # await bot.send_private_msg(user_id=qq, message=msg)
                         # print(course)
                         # print(real_day_time[day_time[transport_time]])
+    msg=msg.rstrip('\n')
+    print(msg)
     await curr_today.send(msg)
     return
     #
