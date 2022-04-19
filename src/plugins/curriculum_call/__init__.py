@@ -420,7 +420,6 @@ async  def wacth(bot:Bot,event:Event):
                         msg = msg + day_time[transport_time] + "节:  " + course + "\n"
     msg = msg.rstrip('\n')
     print(msg)
-    print(type(msg))
     # await bot.send_private_msg(user_id=event.get_user_id(), message=msg)
     await curr_today.send(msg)
     # 来点查询的延迟
