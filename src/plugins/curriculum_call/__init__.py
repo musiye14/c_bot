@@ -386,7 +386,7 @@ async  def wacth(bot:Bot,event:Event):
             # cheak的状态 表示 两种课程类型  false= 大学体育IIII 3-8，10，12-16    ture= 大学英语IV 1-10,12-15 杨曦 语音室A 或者  数字电子技术课程设计16周 白燕燕 实408
             # 根据cheak 的状态选择不同的匹配方式
             if (cheak == True):
-                pat = re.compile(r'(?<=\D)\d\d?-\d\d?(?=\D)|\d\d?(?=周)')
+                pat = re.compile(r'(?<=\D)\d\d?-\d\d?(?=\D)|\d\d?(?=周)|(?=\w*)\d\d?(?=,)|(?<=,)\d\d?(?=\w*)')
                 dt = pat.findall(i)
                 # print(dt)
             else:
@@ -396,9 +396,7 @@ async  def wacth(bot:Bot,event:Event):
             class_choose = []
             for t in dt:
                 # print(t)
-                class_choose = t.split("，")
-                if len(class_choose) == 1:
-                    class_choose = t.split(",")
+                class_choose.append(t)
                 """可能的形式有   1-10，13-15，17  ----->    [1-10  ,13-15  ,17 ]------>  [1,10] """
 
             # print(class_choose)
