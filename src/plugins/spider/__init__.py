@@ -17,11 +17,11 @@ cookie_list=[]
 
 @change_ccokies.handle()
 async def c_cookies(event:Event,bot:Bot):
-	await bot.send('0-b站')
+	await bot.send(message='0-b站')
 	number=event.get_message()
 	print("number拿到的是  " + number)
 	if(number=='0'):
-		await bot.send('请输入cookies')
+		await bot.send(message='请输入cookies')
 		cookie = event.get_message()
 		print("cookies拿到的是  "+cookie)
 		if(len(cookie_list)==0):
@@ -34,8 +34,10 @@ async def c_cookies(event:Event,bot:Bot):
 
 @spider.handle()
 async def bi():
+	if(len(cookie_list)==0):
+		#提示一下要cookies
+		return
 	cookie = cookie_list[0]
-	if(cookie==""): return
 	headers = {
 		'User-Agent': 'Mozilla/5.0 BiliComic/2.10.0'
 	}
