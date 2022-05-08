@@ -15,7 +15,7 @@ spider=on_command("bi", rule=to_me(), priority=20)
 cookie_list=[]
 
 
-@change_ccokies()
+@change_ccokies.handle()
 async def c_cookies(event:Event,bot:Bot):
 	await bot.send('0-bվ')
 	number=event.get_message()
