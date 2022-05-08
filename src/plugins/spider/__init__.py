@@ -7,11 +7,35 @@ from nonebot import require, on_keyword, on_command
 from nonebot import get_bot
 from nonebot.rule import to_me
 scheduler = require("nonebot_plugin_apscheduler").scheduler
-
+change_ccokies = on_keyword("cookies",rule=to_me(),priority=20)
 spider=on_command("bi", rule=to_me(), priority=20)
+
+# 0 bilibili
+# cookie_list=['SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;']
+cookie_list=[]
+
+
+@change_ccokies()
+async def c_cookies(event:Event,bot:Bot):
+	await bot.send('0-b站')
+	number=event.get_message()
+	print("number拿到的是  " + number)
+	if(number=='0'):
+		await bot.send('请输入cookies')
+		cookie = event.get_message()
+		print("cookies拿到的是  "+cookie)
+		if(len(cookie_list)==0):
+			cookie_list.append(cookie)
+		else:
+			cookie_list[0]=cookie
+		print(cookie_list)
+	return
+
+
 @spider.handle()
-async def call():
-	cookie = 'SESSDATA=27d4438d%2C1662653798%2Ce4b6a%2A31; bili_jct=31e06313e087667ffd121dd619485c15;'
+async def bi():
+	cookie = cookie_list[0]
+	if(cookie==""): return
 	headers = {
 		'User-Agent': 'Mozilla/5.0 BiliComic/2.10.0'
 	}
@@ -67,7 +91,7 @@ async def call():
 
 @scheduler.scheduled_job('cron', hour="10", minute="0", id="1")
 async def spider_b():
-	cookie = 'SESSDATA=27d4438d%2C1662653798%2Ce4b6a%2A31; bili_jct=31e06313e087667ffd121dd619485c15;'
+	cookie = 'SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;'
 	headers = {
 		'User-Agent': 'Mozilla/5.0 BiliComic/2.10.0'
 	}
