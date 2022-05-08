@@ -19,25 +19,7 @@ async def call():
 	session = requests.session()
 	SCKEY = 'SCT15277TKlrhzjwElexzNJAFh3R05LFu'
 
-	def pushWechat(code, status, day_count, points):
-		localtime = time.strftime("%m/%d-%H:%M:%S");
-		ssckey = SCKEY
-		send_url = 'http://sctapi.ftqq.com/' + SCKEY + '.send'
-		if code == 0 and status != 1:
-			params = {
-				'title': localtime + 'bilibili签到成功',
-				'desp': '连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
-			}
-		elif status == 1:
-			params = {
-				'title': localtime + 'bilibili已经签到了',
-				'desp': '连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
-			}
-		else:
-			params = {
-				'title': localtime + 'bilibili签到失败',
-			}
-		data = requests.post(send_url, headers=headers, data=params).content.decode()
+
 
 	# 定义一个把cookie 转cookiejar的函数
 	def extract_cookiejar(cookie):
@@ -66,8 +48,10 @@ async def call():
 	points = qiandaoxinxi_list['data']['points'][day_count % 7]
 	code = qiandao_list['code']
 
-	# pushWechat(code,status,day_count,points)
+
 	bot = get_bot()
+	print(code)
+	print(status)
 	if code == 0:
 		msg = '签到成功，连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
 	elif status == 1:
