@@ -6,119 +6,150 @@ from nonebot.adapters.onebot.v11 import Bot, Message,Event,MessageSegment
 from nonebot import require, on_keyword, on_command
 from nonebot import get_bot
 from nonebot.rule import to_me
+from nonebot.matcher import Matcher
+from nonebot.params import Arg, CommandArg, ArgPlainText
+import locale
+import os
+import os.path
 scheduler = require("nonebot_plugin_apscheduler").scheduler
-change_ccokies = on_keyword("cookies",rule=to_me(),priority=20)
+change_ccokies = on_command("cookies",rule=to_me(),priority=20)
 spider=on_command("bi", rule=to_me(), priority=20)
 
 # 0 bilibili
 # cookie_list=['SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;']
-cookie_list=[]
+
+#  用来记录cookies的序号的  0-bilibili
+cookie_list=['0']
+
+# dict_c={"bilibili":'SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;',"baidu":"123"}
+#
+# with open("cookies.json",'w',)as f:
+#     json.dump(dict_c,f)
+
+
+# 判断一下cookies.josn的存在性
+if not os.path.exists('src/plugins/spider/cookies.json'):
+	x=dict()
+	with open("src/plugins/spider/cookies.json",'w')as f:
+		json.dump(x,f)
+
 
 
 @change_ccokies.handle()
-async def c_cookies(event:Event,bot:Bot):
-	await bot.send(message='0-b站')
-	number=event.get_message()
-	print("number拿到的是  " + number)
-	if(number=='0'):
-		await bot.send(message='请输入cookies')
-		cookie = event.get_message()
+async def c_cookies_1(event:Event,bot:Bot,matcher:Matcher, args:Message = CommandArg()):
+	plain_text = args.extract_plain_text()  # 首次发送命令时跟随的参数，例：/天气 上海，则args为上海
+	if plain_text:
+		matcher.set_arg("number", args)  # 如果用户发送了参数则直接赋值
+	# await bot.send(event,message='请输入序号：0-b站')
+	# print(f"\n{args}\n")
+
+@change_ccokies.got("number",prompt="请输入序号：0-b站")
+async def c_cookies_2(event:Event,bot:Bot,matcher:Matcher,number: Message = Arg(),Number:str = ArgPlainText("number")):
+	print(f"\n{Number}\n")
+	if(Number not in cookie_list):
+		await change_ccokies.reject(number.template("你想查询的序号 {number} 暂不支持，请重新输入！"))
+@change_ccokies.got("cookie", prompt="请输入cookies")
+async def c_cookies_3(event:Event,bot:Bot,matcher:Matcher,cookie: Message = Arg(),Number: str = ArgPlainText("number")):
+	print(f"\n{Number}\n")
+	print(f"\n{'0'==Number}\n")
+	if(Number=='0'):
+		with open("src/plugins/spider/cookies.json",'r')as f:
+			cookies_dict=json.load(f)
+
+		cookies_dict['bilibili']=str(cookie)
+		with open('src/plugins/spider/cookies.json','w')as f:
+			json.dump(cookies_dict,f)
+
 		print("cookies拿到的是  "+cookie)
-		if(len(cookie_list)==0):
-			cookie_list.append(cookie)
-		else:
-			cookie_list[0]=cookie
-		print(cookie_list)
-	return
-
-
-@spider.handle()
-async def bi():
-	if(len(cookie_list)==0):
-		#提示一下要cookies
-		return
-	cookie = cookie_list[0]
-	headers = {
-		'User-Agent': 'Mozilla/5.0 BiliComic/2.10.0'
-	}
-	Body = {"platform": "android"}
-	session = requests.session()
-	SCKEY = 'SCT15277TKlrhzjwElexzNJAFh3R05LFu'
-
-
-
-	# 定义一个把cookie 转cookiejar的函数
-	def extract_cookiejar(cookie):
-		cookies = dict([l.split("=", 1) for l in cookie.split("; ")])
-		return cookies
-
-	cookie_dir = extract_cookiejar(cookie)
-
-	cookiejar = requests.utils.cookiejar_from_dict(cookie_dir)
-
-	# 让session带上cookie访问
-	session.cookies = cookiejar
-
-	bilibili_manhua_qiandao_url = 'https://manga.bilibili.com/twirp/activity.v1.Activity/ClockIn'
-	bilibili_manhua_qiandaoxinxi_url = 'https://manga.bilibili.com/twirp/activity.v1.Activity/GetClockInInfo'
-	# 或者网页返回签到头信息
-	bilibili_manhua_response = session.post(bilibili_manhua_qiandao_url, headers=headers, data=Body)
-	# 获取签到数据文本
-	bilibili_data = bilibili_manhua_response.content.decode()
-	qiandao_list = json.loads((bilibili_data))
-	bilibili_manhua_qiandaoxinxi_data = session.post(bilibili_manhua_qiandaoxinxi_url, headers=headers).content.decode()
-	qiandaoxinxi_list = json.loads(bilibili_manhua_qiandaoxinxi_data)
-	print(qiandaoxinxi_list)
-	status = qiandaoxinxi_list['data']['status']
-	day_count = qiandaoxinxi_list['data']['day_count']
-	points = qiandaoxinxi_list['data']['points'][day_count % 7]
-	code = qiandao_list['code']
-
-
-	bot = get_bot()
-	print(code)
-	print(status)
-	if code == 0:
-		msg = '签到成功，连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
-	elif status == 1:
-		msg = '已经签到，连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
+		await bot.send_private_msg(user_id='1950655144', message="cookies已保存")
+		await spider_b()
 	else:
-		msg = '签到失败,可能是cookies失效，请重新设置cookies'
-	await bot.send_private_msg(user_id='1950655144', message=msg)
+		await bot.send_private_msg(user_id='1950655144', message="序号错误")
 	return
 
 
+# @spider.handle()
+# async def bi(event:Event,bot:Bot):
+# 	with open("src/plugins/spider/cookies.json",'r')as f:
+# 		cookie_dict=json.load(f)
+# 	if(cookie_dict.get('bilibili')!=None):
+# 		#提示一下要cookies
+# 		await bot.send_private_msg(user_id='1950655144', message="请输入cookies去设置cookies")
+# 		return
+#
+# 	cookie = cookie_list[0]
+# 	headers = {
+# 		'User-Agent': 'Mozilla/5.0 BiliComic/2.10.0'
+# 	}
+# 	Body = {"platform": "android"}
+# 	session = requests.session()
+# 	SCKEY = 'SCT15277TKlrhzjwElexzNJAFh3R05LFu'
+#
+#
+#
+# 	# 定义一个把cookie 转cookiejar的函数
+# 	def extract_cookiejar(cookie):
+# 		cookies = dict([l.split("=", 1) for l in cookie.split("; ")])
+# 		return cookies
+#
+# 	cookie_dir = extract_cookiejar(cookie)
+#
+# 	cookiejar = requests.utils.cookiejar_from_dict(cookie_dir)
+#
+# 	# 让session带上cookie访问
+# 	session.cookies = cookiejar
+#
+# 	bilibili_manhua_qiandao_url = 'https://manga.bilibili.com/twirp/activity.v1.Activity/ClockIn'
+# 	bilibili_manhua_qiandaoxinxi_url = 'https://manga.bilibili.com/twirp/activity.v1.Activity/GetClockInInfo'
+# 	# 或者网页返回签到头信息
+# 	bilibili_manhua_response = session.post(bilibili_manhua_qiandao_url, headers=headers, data=Body)
+# 	# 获取签到数据文本
+# 	bilibili_data = bilibili_manhua_response.content.decode()
+# 	qiandao_list = json.loads((bilibili_data))
+# 	bilibili_manhua_qiandaoxinxi_data = session.post(bilibili_manhua_qiandaoxinxi_url, headers=headers).content.decode()
+# 	qiandaoxinxi_list = json.loads(bilibili_manhua_qiandaoxinxi_data)
+# 	print(qiandaoxinxi_list)
+# 	status = qiandaoxinxi_list['data']['status']
+# 	day_count = qiandaoxinxi_list['data']['day_count']
+# 	points = qiandaoxinxi_list['data']['points'][day_count % 7]
+# 	code = qiandao_list['code']
+#
+#
+# 	bot = get_bot()
+# 	print(code)
+# 	print(status)
+# 	if code == 0:
+# 		msg = '签到成功，连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
+# 	elif status == 1:
+# 		msg = '已经签到，连续' + str(day_count) + '天签到\n''积分增加' + str(points) + '分'
+# 	else:
+# 		msg = '签到失败,可能是cookies失效，请重新设置cookies'
+# 	await bot.send_private_msg(user_id='1950655144', message=msg)
+# 	return
 
 
 
-@scheduler.scheduled_job('cron', hour="10", minute="0", id="1")
+
+
+@scheduler.scheduled_job('cron', hour="12", minute="0", id="1")
 async def spider_b():
-	cookie = 'SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;'
+	bot = get_bot()
+	with open('src/plugins/spider/cookies.json','r')as f:
+		data=json.load(f)
+		if (data.get('bilibili') == None):
+			# 提示一下要cookies
+			await bot.send_private_msg(user_id='1950655144', message="请输入cookies去设置cookies")
+			return
+	print(data)
+	cookie =data['bilibili']
+
 	headers = {
 		'User-Agent': 'Mozilla/5.0 BiliComic/2.10.0'
 	}
 	Body = {"platform": "android"}
 	session = requests.session()
 	SCKEY = 'SCT15277TKlrhzjwElexzNJAFh3R05LFu'
-	def pushWechat(code,status,day_count,points):
-		localtime = time.strftime("%m/%d-%H:%M:%S");
-		ssckey = SCKEY
-		send_url = 'http://sctapi.ftqq.com/'+ SCKEY +'.send'
-		if code == 0 and status!=1 :
-			params = {
-				'title': localtime+'bilibili签到成功',
-				'desp': '连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'
-			}
-		elif status == 1:
-			params = {
-				'title':  localtime+'bilibili已经签到了',
-				'desp': '连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'
-			}
-		else:
-			params = {
-				'title':  localtime+'bilibili签到失败',
-			}
-		data = requests.post(send_url,headers=headers, data=params).content.decode()
+
 	#定义一个把cookie 转cookiejar的函数
 	def extract_cookiejar(cookie):
 		cookies = dict([l.split("=",1)for l in cookie.split("; ")])
@@ -146,7 +177,6 @@ async def spider_b():
 	points = qiandaoxinxi_list['data']['points'][day_count%7]
 	code = qiandao_list['code']
 
-	# pushWechat(code,status,day_count,points)
 	bot = get_bot()
 	if code == 0:
 		msg='签到成功，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'
@@ -155,32 +185,29 @@ async def spider_b():
 	else:
 		msg='签到失败,可能是cookies失效，请重新设置cookies'
 	await bot.send_private_msg(user_id='1950655144', message=msg)
-	return
-	# #自动换票
-	# locale.setlocale(locale.LC_CTYPE, 'chinese')
-	#
-	# while time.strftime('%H:%M') >= "12:00":
-	# 	i = 0
-	# 	while i<5 :
-	# 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
-	#
-	# 		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
-	#
-	# 		piaozi_list_response = session.post(piaozi_list_url,headers=headers).content.decode()
-	# 		data = json.loads(piaozi_list_response)['data'][0]
-	# 		id = data['id']
-	# 		cost = data['real_cost']
-	#
-	# 		piaozi_Body = {
-	# 			'product_id': id,
-	# 			'product_num': 1,
-	# 			'point': cost
-	# 		}
-	# 		piaozi_data = session.post(piaozi_url,headers=headers,data=piaozi_Body).content.decode()
-	# 		data = json.loads(piaozi_data)
-	# 		msg = data['msg']
-	# 		code = data['code']
-	# 		print('购买中。。。。。\n购买结果为')
-	# 		print(msg)
-	# 		i=i+1
-	# 		time.sleep(5)
+	#自动换票
+	locale.setlocale(locale.LC_CTYPE, 'chinese')
+	i=0
+	while time.strftime('%H:%M') >= "12:00" and i<5:
+		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
+
+		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
+
+		piaozi_list_response = session.post(piaozi_list_url,headers=headers).content.decode()
+		data = json.loads(piaozi_list_response)['data'][0]
+		id = data['id']
+		cost = data['real_cost']
+
+		piaozi_Body = {
+			'product_id': id,
+			'product_num': 1,
+			'point': cost
+		}
+		piaozi_data = session.post(piaozi_url,headers=headers,data=piaozi_Body).content.decode()
+		data = json.loads(piaozi_data)
+		msg = data['msg']
+		code = data['code']
+		await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为{msg}')
+		i=i+1
+		time.sleep(5)
+		return
