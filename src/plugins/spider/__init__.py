@@ -15,16 +15,12 @@ scheduler = require("nonebot_plugin_apscheduler").scheduler
 change_ccokies = on_command("cookies",rule=to_me(),priority=20)
 spider=on_command("bi", rule=to_me(), priority=20)
 
-# 0 bilibili
-# cookie_list=['SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;']
+
 
 #  用来记录cookies的序号的  0-bilibili
 cookie_list=['0']
 
-# dict_c={"bilibili":'SESSDATA=070f477a%2C1665333277%2Cf3c67%2A41; bili_jct=637b60b7836fe48f047aa58e7a6ebdb6;',"baidu":"123"}
-#
-# with open("cookies.json",'w',)as f:
-#     json.dump(dict_c,f)
+
 
 
 # 判断一下cookies.josn的存在性
