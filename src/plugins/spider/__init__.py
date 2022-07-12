@@ -127,7 +127,7 @@ async def c_cookies_3(event:Event,bot:Bot,matcher:Matcher,cookie: Message = Arg(
 
 
 
-@scheduler.scheduled_job('cron', hour="12", minute="0", id="1")
+@scheduler.scheduled_job('cron', hour="11", minute="59", id="1")
 async def spider_b():
 	bot = get_bot()
 	with open('src/plugins/spider/cookies.json','r')as f:
@@ -160,6 +160,7 @@ async def spider_b():
 
 	bilibili_manhua_qiandao_url = 'https://manga.bilibili.com/twirp/activity.v1.Activity/ClockIn'
 	bilibili_manhua_qiandaoxinxi_url = 'https://manga.bilibili.com/twirp/activity.v1.Activity/GetClockInInfo'
+	bilibili_manhua_user_info_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/GetUserPoint'
 	#或者网页返回签到头信息
 	bilibili_manhua_response = session.post(bilibili_manhua_qiandao_url,headers=headers,data=Body)
 	#获取签到数据文本
@@ -181,9 +182,19 @@ async def spider_b():
 	else:
 		msg='签到失败,可能是cookies失效，请重新设置cookies'
 	await bot.send_private_msg(user_id='1950655144', message=msg)
+
+
+
 	#自动换票
 	# locale.setlocale(locale.LC_CTYPE, 'chinese')
-	while time.strftime('%H:%M') >= "11:59" and time.strftime('%H:%M') >= "12:01 ": #判断一手时间  抢10次
+	# 拿自己的信息
+	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
+	user_data = user_info.content.decode()
+	uesr_info_list = json.loads(user_data)
+	print(uesr_info_list)
+	# 自己的当前分数
+	user_point = int(uesr_info_list['data']['point'])
+	while time.strftime('%H:%M') <="12:01 " and user_point>=100: #判断一手时间  抢10次
 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
 
 		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
