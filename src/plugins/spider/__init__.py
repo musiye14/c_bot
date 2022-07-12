@@ -182,9 +182,8 @@ async def spider_b():
 		msg='签到失败,可能是cookies失效，请重新设置cookies'
 	await bot.send_private_msg(user_id='1950655144', message=msg)
 	#自动换票
-	locale.setlocale(locale.LC_CTYPE, 'chinese')
-	i=0
-	while time.strftime('%H:%M') >= "12:00" and i<5:
+	# locale.setlocale(locale.LC_CTYPE, 'chinese')
+	while time.strftime('%H:%M') >= "11:59" and time.strftime('%H:%M') >= "12:01 ": #判断一手时间  抢10次
 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
 
 		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
@@ -203,7 +202,5 @@ async def spider_b():
 		data = json.loads(piaozi_data)
 		msg = data['msg']
 		code = data['code']
-		await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为{msg}')
-		i=i+1
-		time.sleep(5)
+		await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为{msg}') #信息通知
 		return
