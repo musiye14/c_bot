@@ -186,9 +186,9 @@ async def spider_b():
 
 	bot = get_bot()
 	if code == 0:
-		msg='签到成功，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'+f'\n当前积分{user_point}'
+		msg='签到成功，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'+f'\n当前积分{str(user_point)}'
 	elif status == 1:
-		msg='已经签到，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'+f'\n当前积分{user_point}'
+		msg='已经签到，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'+f'\n当前积分{str(user_point)}'
 	else:
 		msg='签到失败,可能是cookies失效，请重新设置cookies'
 	await bot.send_private_msg(user_id='1950655144', message=msg)
@@ -199,7 +199,7 @@ async def spider_b():
 	# locale.setlocale(locale.LC_CTYPE, 'chinese')
 
 	i=0
-	while time.strftime('%H:%M') <="12:01 " and user_point>=100: #判断一手时间  抢10次
+	while time.strftime('%H:%M') <="12:01" and user_point>=100: #判断一手时间
 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
 
 		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
@@ -220,9 +220,11 @@ async def spider_b():
 		code = data['code']
 		print(f'购买中。。。。。\n购买结果为{msg}')
 		if code==1: i+=1
+
+
 	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
 	user_data = user_info.content.decode()
 	uesr_info_list = json.loads(user_data)
 	user_point = int(uesr_info_list['data']['point'])
-	await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为买了{i}张票，还剩下{user_point}分') #信息通知
+	await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为买了{i}张票，还剩下{str(user_point)}分') #信息通知
 	return
