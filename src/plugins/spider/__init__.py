@@ -44,6 +44,7 @@ async def c_cookies_2(event:Event,bot:Bot,matcher:Matcher,number: Message = Arg(
 	print(f"\n{Number}\n")
 	if(Number not in cookie_list):
 		await change_ccokies.reject(number.template("你想查询的序号 {number} 暂不支持，请重新输入！"))
+
 @change_ccokies.got("cookie", prompt="请输入cookies")
 async def c_cookies_3(event:Event,bot:Bot,matcher:Matcher,cookie: Message = Arg(),Number: str = ArgPlainText("number")):
 	print(f"\n{Number}\n")
@@ -174,11 +175,20 @@ async def spider_b():
 	points = qiandaoxinxi_list['data']['points'][day_count%7]
 	code = qiandao_list['code']
 
+	time.sleep(3)
+	# 拿自己的信息
+	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
+	user_data = user_info.content.decode()
+	uesr_info_list = json.loads(user_data)
+	print(uesr_info_list)
+	# 自己的当前分数
+	user_point = int(uesr_info_list['data']['point'])
+
 	bot = get_bot()
 	if code == 0:
-		msg='签到成功，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'
+		msg='签到成功，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'+f'\n当前积分{user_point}'
 	elif status == 1:
-		msg='已经签到，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'
+		msg='已经签到，连续'+str(day_count)+'天签到\n''积分增加'+str(points)+'分'+f'\n当前积分{user_point}'
 	else:
 		msg='签到失败,可能是cookies失效，请重新设置cookies'
 	await bot.send_private_msg(user_id='1950655144', message=msg)
@@ -187,13 +197,8 @@ async def spider_b():
 
 	#自动换票
 	# locale.setlocale(locale.LC_CTYPE, 'chinese')
-	# 拿自己的信息
-	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
-	user_data = user_info.content.decode()
-	uesr_info_list = json.loads(user_data)
-	print(uesr_info_list)
-	# 自己的当前分数
-	user_point = int(uesr_info_list['data']['point'])
+
+	i=0
 	while time.strftime('%H:%M') <="12:01 " and user_point>=100: #判断一手时间  抢10次
 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
 
@@ -213,5 +218,11 @@ async def spider_b():
 		data = json.loads(piaozi_data)
 		msg = data['msg']
 		code = data['code']
-		await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为{msg}') #信息通知
-		return
+		print(f'购买中。。。。。\n购买结果为{msg}')
+		if code==1: i+=1
+	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
+	user_data = user_info.content.decode()
+	uesr_info_list = json.loads(user_data)
+	user_point = int(uesr_info_list['data']['point'])
+	await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为买了{i}张票，还剩下{user_point}分') #信息通知
+	return
