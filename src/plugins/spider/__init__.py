@@ -199,7 +199,7 @@ async def spider_b():
 	# locale.setlocale(locale.LC_CTYPE, 'chinese')
 
 	i=0
-	while time.strftime('%H:%M') <="12:01" and user_point>=100: #判断一手时间
+	while time.strftime('%H:%M') <="12:05" and user_point>=100: #判断一手时间
 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
 
 		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
@@ -219,7 +219,9 @@ async def spider_b():
 		msg = data['msg']
 		code = data['code']
 		print(f'购买中。。。。。\n购买结果为{msg}')
-		if code==1: i+=1
+		if code==0:
+			i+=1
+			user_point=user_point-100
 
 
 	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
