@@ -199,7 +199,9 @@ async def spider_b():
 	# locale.setlocale(locale.LC_CTYPE, 'chinese')
 
 	i=0
+	ticket_flag=False
 	while time.strftime('%H:%M') <="12:05" and user_point>=100: #判断一手时间
+		ticket_flag = True
 		piaozi_list_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/ListProduct?device=h5&platform=web'
 
 		piaozi_url = 'https://manga.bilibili.com/twirp/pointshop.v1.Pointshop/Exchange?device=h5&platform=web'
@@ -223,10 +225,10 @@ async def spider_b():
 			i+=1
 			user_point=user_point-100
 
-
-	user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
-	user_data = user_info.content.decode()
-	uesr_info_list = json.loads(user_data)
-	user_point = int(uesr_info_list['data']['point'])
-	await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为买了{i}张票，还剩下{str(user_point)}分') #信息通知
-	return
+	if(ticket_flag):
+		user_info = session.post(bilibili_manhua_user_info_url, headers=headers, data=Body)
+		user_data = user_info.content.decode()
+		uesr_info_list = json.loads(user_data)
+		user_point = int(uesr_info_list['data']['point'])
+		await bot.send_private_msg(user_id='1950655144', message=f'购买中。。。。。\n购买结果为买了{i}张票，还剩下{str(user_point)}分') #信息通知
+		return
